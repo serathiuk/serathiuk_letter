@@ -8,7 +8,12 @@ defmodule Letter do
               "ORGAO", "PORTA", "POUCA", "RALAR", "RESTO", "SARRO", "TRUTA", "UNICO"]
 
   def new_game() do
-    new_game("TRUTA")
+    get_random_word()
+    |> new_game()
+  end
+
+  defp get_random_word() do
+    Enum.random(@word_list)
   end
 
   def new_game(board_word) when is_bitstring(board_word) do
@@ -20,6 +25,8 @@ defmodule Letter do
   end
 
   def play(%Letter{} = letter) do
+    show_words()
+
     letter
     |> execute_next_step()
   end
@@ -30,17 +37,17 @@ defmodule Letter do
   end
 
   defp execute_next_step(%__MODULE__{success: true, board: %Board{word: correct_word}}) do
-    IO.puts("-----------------------------------")
+    show_separator_line()
     IO.puts("Congratulations :)")
     IO.puts("The correct word is #{correct_word}.")
-    IO.puts("-----------------------------------")
+    show_separator_line()
   end
 
   defp execute_next_step(%__MODULE__{attemps: @max_attemps, board: %Board{word: correct_word}}) do
-    IO.puts("-----------------------------------")
+    show_separator_line()
     IO.puts("Game over :(")
     IO.puts("The correct word is #{correct_word}.")
-    IO.puts("-----------------------------------")
+    show_separator_line()
   end
 
   defp execute_next_step(%Letter{} = letter) do
@@ -85,6 +92,22 @@ defmodule Letter do
 
   defp valid_word?(word) when is_bitstring(word) do
     word in @word_list
+  end
+
+  defp show_words() do
+    show_separator_line()
+
+    IO.puts("Valid words:")
+    @word_list
+    |> Enum.chunk_every(8)
+    |> Enum.map(fn list -> Enum.join(list, ", ") <> "\n" end)
+    |> IO.puts()
+
+    show_separator_line()
+  end
+
+  defp show_separator_line() do
+    IO.puts("-----------------------------------------------------")
   end
 
 end
